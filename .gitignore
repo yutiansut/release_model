@@ -1,4 +1,37 @@
 # Prerequisites
+*.out
+tags
+*bak
+build_debug
+build_release
+qlib
+*.so
+check_log.txt
+*.gch
+debug_list
+*.txt
+RunModel
+BDTModel/
+BDTModel0/
+BDTModel1/
+BDTModel2/
+BDTModel3/
+BDTModel4/
+BDTModel5/
+BDTModel6/
+BDTModel7/
+BDTModel8/
+BDTModel9/
+FactorDev/
+GenCache/
+ManModel/
+RunModel2/
+check_model/
+fee/
+optm/
+BDTModel_dev/
+DevFuturesPair/
+hft/
 *.d
 
 # Compiled Object files
