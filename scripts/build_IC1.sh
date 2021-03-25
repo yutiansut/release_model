@@ -3,7 +3,7 @@ BaskDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 echo "current directory: ${BaskDIR}"
 cd ${BaskDIR}
 if [[ $# -gt 0 ]] && [[ $1 = "--force" ]]; then
-    rm -rf IC1
+    rm -rf build/IC1
 fi
 
 mkdir -p build/IC1

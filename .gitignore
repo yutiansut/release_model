@@ -63,5 +63,5 @@ hft/
 *.exe
 *.out
 *.app
-IC1/
+build/
 test/
