@@ -6,9 +6,9 @@ if [[ $# -gt 0 ]] && [[ $1 = "--force" ]]; then
     rm -rf IC1
 fi
 
-mkdir -p IC1
-cd IC1
-cmake -DCMAKE_BUILD_TYPE=Release .. -DCMAKE_INSTALL_PREFIX=../qlib -DBUILD_IC1=on
+mkdir -p build/IC1
+cd build/IC1
+cmake -DCMAKE_BUILD_TYPE=Release ../.. -DCMAKE_INSTALL_PREFIX=../qlib -DBUILD_IC1=on
 make -j8
 make install
 cd ..
