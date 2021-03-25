@@ -1,0 +1,2 @@
+double m_threshold1 = 0.8865544585510831;
+double m_threshold2 = -0.8251458829862018;

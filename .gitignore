@@ -64,3 +64,4 @@ hft/
 *.out
 *.app
 IC1/
+test/
