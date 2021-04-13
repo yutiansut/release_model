@@ -1,7 +1,7 @@
 #include "mydefine.h"
 
 //#define LOG_LEVEL_2
-
+//
 #include "BDT_model.hpp"
 #include "StraPro.hpp"
 #include "alpha/alpha.h"
@@ -113,9 +113,9 @@ void Strapro::do_finalize() {
     m_threshold = ALPHA_CONFIG->get_double("threshold", 1.2);
     Ntick = ALPHA_CONFIG->get_int("Ntick", 3);
     trade_mode = ALPHA_CONFIG->get_int("trade_mode", 1);
-    printf("trade_mode %d\n", trade_mode);
+    // printf("trade_mode %d\n", trade_mode);
     max_pos = ALPHA_CONFIG->get_int("max_pos", 1);
-    printf("max_pos %d\n", max_pos);
+    // printf("max_pos %d\n", max_pos);
     int first_tick{1};
     for (uint32_t i = 0; i < init_ticks; ++i) {
         int cur_tick = first_tick + i;
@@ -350,7 +350,8 @@ void Strapro::calc(uint) {
         auto bid1 = trigger_tick->operator()(0).bid[0];
         auto ask1 = trigger_tick->operator()(0).ask[0];
         LOG_INFO1("bid:{} ask:{}", bid1, ask1);
-        // HUSKY_TRADE_INFO("target_pos:{} net_pos:{}", target_pos, this->get_net_position());
+        // HUSKY_TRADE_INFO("target_pos:{} net_pos:{}", target_pos,
+        // this->get_net_position());
         if (target_pos - this->get_net_position() > 0) {
             NewBuyOrder(target_pos - this->get_net_position(), trade_mode);
         }
@@ -366,7 +367,8 @@ void Strapro::calc(uint) {
         auto ask1 = trigger_tick->operator()(0).ask[0];
         LOG_INFO1("#{} bid:{} ask:{}", counter, bid1, ask1);
         LOG_INFO1("#{} NetPositions {} target_pos {}", counter, get_net_position(), target_pos);
-        // HUSKY_TRADE_INFO("target_pos:{} net_pos:{}", target_pos, this->get_net_position());
+        // HUSKY_TRADE_INFO("target_pos:{} net_pos:{}", target_pos,
+        // this->get_net_position());
         if (target_pos - this->get_net_position() < 0) {
             NewSellOrder(this->get_net_position() - target_pos, trade_mode);
         }
