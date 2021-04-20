@@ -31,7 +31,6 @@ fee/
 optm/
 BDTModel_dev/
 DevFuturesPair/
-hft/
 *.d
 
 # Compiled Object files
