@@ -1,4 +1,5 @@
 #pragma once
+#include "common/log.h"
 #include <cmath>
 #include <unordered_map>
 // 函数
@@ -142,4 +143,82 @@ void Var(const TItr& x_end, const size_t& n, T* out_var, const int& stride = 1) 
     //*out_var = x_mean;
 }
 
+template <typename TItr>
+double get_std(const TItr& _begin, const TItr& _end) {
+    double xsq{0};
+    double x_sum{0};
+
+    for (TItr itr = _begin; itr <= _end; ++itr) {
+        auto& tmp_x = *itr;
+        x_sum += tmp_x;
+        xsq += tmp_x * tmp_x;
+    }
+    auto len = static_cast<uint32_t>(_end - _begin);
+    return sqrt((xsq - x_sum * x_sum / len) / (len - 1));
+}
+#define EPS 1e-5
+template <typename T, size_t length>
+void find_low(std::array<T, length> x, T val, int32_t begin, int32_t end, int32_t* low_index) {
+    // 要val 要介于x[begin], x[end] 之间
+    // 比较 val x, xpr
+    //  val <=x && val>xpr, 这是需要寻找的位置
+    //  将x整体加上EPS, 这样条件变成了 xpr < val < x
+    auto tmp_begin{begin};
+    auto tmp_end{end - 1};
+
+    while (tmp_begin < tmp_end) {
+        auto i = (tmp_begin + tmp_end) / 2;
+        // STD_LOG("[find_low] [{:.5f}, {:.5f}], mid:{:.5f}, val:{:.5f}, begin:{}, end:{}, i:{}", x[tmp_begin],
+        // x[tmp_end],
+        //        x[i], val, tmp_begin, tmp_end, i);
+        if (val < x[i] + EPS) {
+            tmp_end = i;
+        } else if (val > x[i + 1] + EPS) {
+            tmp_begin = i + 1;
+        } else {
+            *low_index = i;
+            return;
+        }
+    }
+}
+template <typename T, size_t length>
+void find_high(std::array<T, length> x, T val, int32_t begin, int32_t end, int32_t* high_index) {
+    // 要求val介于x[begin], x[end-1] 之间
+    // 比较 val x, xpr
+    //  val <x && val>=xpr, 这是需要寻找的位置
+    //  将x整体减去EPS, 这样条件变成了 xpr < val < x
+    auto tmp_begin{begin};
+    auto tmp_end{end - 1};
+
+    while (tmp_begin < tmp_end) {
+        auto i = (tmp_begin + tmp_end) / 2;
+        // STD_LOG("[{:.5f}, {:.5f}], mid:{:.5f}, val:{:.5f}, begin:{}, end:{}, i:{}", x[tmp_begin], x[tmp_end], x[i],
+        // val,
+        //        tmp_begin, tmp_end, i);
+        if (val > x[i + 1] - EPS) {
+            // val > x[i+1]
+            tmp_begin = i + 1;
+        } else if (val < x[i] - EPS) {
+            // val < x[i]
+            tmp_end = i;
+        } else {
+            *high_index = i;
+            return;
+        }
+    }
+}
+template <typename T, size_t length>
+void find_high_low(const std::array<T, length>& sorted_list, const T& val, int32_t* high_index, int32_t* low_index) {
+
+    // LOG_INFO5("val:{:.5f}", val);
+    // for (size_t i = 0; i < sorted_list.size(); ++i) {
+    //    LOG_INFO5("v[{}]={:.5f}", i, sorted_list[i]);
+    //}
+    int32_t end = static_cast<int32_t>(length);
+    math_tool::find_low(sorted_list, val, 0, end, low_index);
+    // LOG_INFO5("low_index:{}", *low_index);
+    int32_t begin = *low_index == 0 ? 0 : *low_index - 1;
+    math_tool::find_high(sorted_list, val, begin, end, high_index);
+    // LOG_INFO5("high_index:{}", *high_index);
+}
 }  // namespace math_tool
