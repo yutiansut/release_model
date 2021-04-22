@@ -140,6 +140,7 @@ double decay_linear(const List<T, Len>& x, const uint16_t& period) {
 template <typename T, uint32_t Len>
 float ts_trend(const List<T, Len>& x, const uint16_t& period) {
     double net_amp = x.pre(0) - x.pre(period);
+    // LOG_INFO3("[ts_trend] net_amp: {}", net_amp);
     if (UNLIKELY(fabs(net_amp) < 1e-7)) {
         return 0;
     }
@@ -154,6 +155,8 @@ float ts_trend(const List<T, Len>& x, const uint16_t& period) {
 template <typename T, uint32_t Len>
 float ts_trend2(const List<T, Len>& x, const uint16_t& period) {
     auto pre_x = x.pre(period);
+    // LOG_INFO3("[ts_trend2] pre_x:{:.5f}, min:{:.5f} max:{:.5f}", pre_x, ts_min(x, period), ts_max(x, period));
+    // LOG_INFO3("[ts_trend2] pre_x:{:.5f}, now:{:.5f}", pre_x, x.pre(0));
     if (x.pre(0) > pre_x + 1e-5) {
         return x.pre(0) - ts_min(x, period);
     } else if (x.pre(0) < pre_x - 1e-5) {
