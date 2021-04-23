@@ -35,7 +35,7 @@ void EWMCaler<T>::ReSet() {
 }
 template <typename T>
 void EWMCaler<T>::Add(const T& a_value) {
-    if (first_init) {
+    if (UNLIKELY(first_init)) {
         m_mean = a_value;
         first_init = false;
     } else {
