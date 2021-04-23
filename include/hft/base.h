@@ -34,8 +34,7 @@
 //////////////////////////////////////////////////////////////////
 #define LOG_WAIT_TIMEOUT 5
 #define TIMEVAL_MULTI 1000000
-// 子线程绑定cpu设置(一般不要绑在0和1)
-#define NPS 0.000001
+#define NPS 0.00001
 
 // 尽量避免跳转语句
 #define LIKELY(x) __builtin_expect(!!(x), 1)

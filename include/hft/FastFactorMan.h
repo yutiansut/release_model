@@ -58,6 +58,8 @@ class FastFactorMan : public TProduct {
     inline double a2f7();
     inline double a2f12();
     inline double a2f13();
+    inline int8_t sa2();
+    inline int8_t sa3();
 
     // a1f4 = factor::get_a1(DMB_list, 1);
 
@@ -483,7 +485,9 @@ void FastFactorMan::eval(const md::l2 &tick) {
 #endif
     guess_trade_price(tick);
 #ifdef USE_VPI
-    VPI = static_cast<double>(ask_vol - bid_vol) / (ask_vol + bid_vol);
+    if (ask_vol + bid_vol != 0) {
+        VPI = static_cast<double>(ask_vol - bid_vol) / (ask_vol + bid_vol);
+    }
 #endif
 
 #ifdef USE_VOI
@@ -592,6 +596,10 @@ double FastFactorMan::a2f7() { return AsyBidAsk + AsyBidAsk_list.pre(7) - 2 * As
 // a2f12 = factor::get_a2(GTVol_list, 4);
 double FastFactorMan::a2f12() { return GTVol + GTVol_list.pre(7) - 2 * GTVol_list.pre(3); }
 #endif
+int8_t FastFactorMan::sa2() { return math_tool::sign(wvap - wvap_list.pre(1)); }
+int8_t FastFactorMan::sa3() { return math_tool::sign(wvap - wvap_list.pre(2)); }
+// sa2 = math_tool::sign(tp_list.pre(0) - tp_list.pre(2));
+// sa3 = math_tool::sign(tp_list.pre(0) - tp_list.pre(3));
 // a2f13 = factor::get_a2(L2f1_list, 3);
 }  // namespace fast
 }  // namespace hft
