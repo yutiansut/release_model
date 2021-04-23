@@ -94,8 +94,16 @@ void Strapro::init_data() {
     trigger_data->SetDoCal(true);
     //
     Ff7_caler.set_period(10);
+    Ff7_10_caler.set_period(10);
+    Ff7_20_caler.set_period(20);
+    Ff7_40_caler.set_period(40);
+    Ff7_80_caler.set_period(80);
     Ff8_2_caler.set_period(40);
+    L2f10_10_caler.set_period(10);
+    L2f10_20_caler.set_period(20);
+    L2f10_40_caler.set_period(40);
     L2f10_60_caler.set_period(60);
+    L2f10_80_caler.set_period(80);
 }
 void Strapro::re_set_data() {
     if (use_IC1) IC1_data.ReSet();
@@ -138,10 +146,18 @@ void Strapro::do_finalize() {
     }
     IC1_factor_data.init_data(tick_list, init_ticks);
     Ff7_caler.init_data(&IC1_factor_data);
+    Ff7_10_caler.init_data(&IC1_factor_data);
+    Ff7_20_caler.init_data(&IC1_factor_data);
+    Ff7_40_caler.init_data(&IC1_factor_data);
+    Ff7_80_caler.init_data(&IC1_factor_data);
     Ff8_2_caler.init_data(&IC1_factor_data);
     L2a1_caler.init_data(&IC1_factor_data);
     L2a2_caler.init_data(&IC1_factor_data);
+    L2f10_10_caler.init_data(&IC1_factor_data);
+    L2f10_20_caler.init_data(&IC1_factor_data);
+    L2f10_40_caler.init_data(&IC1_factor_data);
     L2f10_60_caler.init_data(&IC1_factor_data);
+    L2f10_80_caler.init_data(&IC1_factor_data);
     L2f9_caler.init_data(&IC1_factor_data);
     L2p1_caler.init_data(&IC1_factor_data);
     L2p2_caler.init_data(&IC1_factor_data);
@@ -235,7 +251,8 @@ void Strapro::TradeOrder() {
 }
 
 void Strapro::calc(uint) {
-    LOG_INFO5("===================={}==============", ++counter);
+    // LOG_INFO5("===================={}==============", ++counter);
+    auto tag_start = NOW();
     if (trigger_tick->operator()(10).update_time == 0) return;
     cancel_all();
 
@@ -356,42 +373,60 @@ void Strapro::calc(uint) {
 #endif
     }
 
-    auto tag_start = NOW();
     IC1_factor_data.eval(IC1(0));
-    double tmp_Ff7 = Ff7_caler.eval(&IC1_factor_data);
-    double tmp_Ff8_2 = Ff8_2_caler.eval(&IC1_factor_data);
-    double new_L2f8 = L2f8_caler.eval(&IC1_factor_data);
-    double new_L2f1 = IC1_factor_data.GetL2f1(IC1(0));
-    double tmp_L2a1 = L2a1_caler.eval(&IC1_factor_data);
-    double tmp_L2a2 = L2a2_caler.eval(&IC1_factor_data);  // 20ns
-    double new_L2f6 = L2f6_caler.eval(&IC1_factor_data);
-    double tmp_L2f10_60 = L2f10_60_caler.eval(&IC1_factor_data);
-    double new_L2f9 = L2f9_caler.eval(&IC1_factor_data);
-    double new_L2p1 = L2p1_caler.eval(&IC1_factor_data);
-    double new_L2p2 = L2p2_caler.eval(&IC1_factor_data);
-    double new_VOI = IC1_factor_data.VOI;
+    // double tmp_Ff7 = Ff7_caler.eval(&IC1_factor_data);
+    float new_Ff7_10 = Ff7_10_caler.eval(&IC1_factor_data);
+    float new_Ff7_20 = Ff7_20_caler.eval(&IC1_factor_data);
+    float new_Ff7_40 = Ff7_40_caler.eval(&IC1_factor_data);
+    float new_Ff7_80 = Ff7_80_caler.eval(&IC1_factor_data);
+    float new_Ff8_2 = Ff8_2_caler.eval(&IC1_factor_data);
+    float new_L2f8 = L2f8_caler.eval(&IC1_factor_data);
+    float new_L2f1 = IC1_factor_data.L2f1;
+    float new_L2a1 = L2a1_caler.eval(&IC1_factor_data);
+    float new_L2a2 = L2a2_caler.eval(&IC1_factor_data);  // 20ns
+    float new_L2f6 = L2f6_caler.eval(&IC1_factor_data);
+    float new_L2f10_10 = L2f10_10_caler.eval(&IC1_factor_data);
+    float new_L2f10_20 = L2f10_20_caler.eval(&IC1_factor_data);
+    float new_L2f10_40 = L2f10_40_caler.eval(&IC1_factor_data);
+    float new_L2f10_60 = L2f10_60_caler.eval(&IC1_factor_data);
+    float new_L2f10_80 = L2f10_80_caler.eval(&IC1_factor_data);
+    float new_L2f10 = 0.5 * (new_L2f10_10 + new_L2f10_20 + new_L2f10_40 + new_L2f10_80);
+    float new_L2f9 = L2f9_caler.eval(&IC1_factor_data);
+    float new_L2p1 = L2p1_caler.eval(&IC1_factor_data);
+    float new_L2p2 = L2p2_caler.eval(&IC1_factor_data);
+    float new_VOI = IC1_factor_data.VOI;
     // double new_VOI = VOI_caler.eval(&IC1_factor_data);
     // double new_a1f10 = a1f10_caler.eval(&IC1_factor_data);
     // double new_a1f11 = a1f11_caler.eval(&IC1_factor_data);
-    double new_a1f10 = IC1_factor_data.a1f10();
-    double new_a1f11 = IC1_factor_data.a1f11();
-    double new_a1f12 = IC1_factor_data.a1f12();
-    double new_a1f13 = IC1_factor_data.a1f13();
-    double new_a1f14 = IC1_factor_data.a1f14();
-    double new_a1f15 = IC1_factor_data.a1f15();
-    double new_a1f4 = IC1_factor_data.a1f4();
-    double new_a1f5 = IC1_factor_data.a1f5();
-    double new_a1f6 = IC1_factor_data.a1f6();
-    double new_a1f7 = IC1_factor_data.a1f7();
-    double new_a1f9 = IC1_factor_data.a1f9();
+    float new_a1f10 = IC1_factor_data.a1f10();
+    float new_a1f11 = IC1_factor_data.a1f11();
+    float new_a1f12 = IC1_factor_data.a1f12();
+    float new_a1f13 = IC1_factor_data.a1f13();
+    float new_a1f14 = IC1_factor_data.a1f14();
+    float new_a1f15 = IC1_factor_data.a1f15();
+    float new_a1f4 = IC1_factor_data.a1f4();
+    float new_a1f5 = IC1_factor_data.a1f5();
+    float new_a1f6 = IC1_factor_data.a1f6();
+    float new_a1f7 = IC1_factor_data.a1f7();
+    float new_a1f9 = IC1_factor_data.a1f9();
 
-    double new_a2f5 = IC1_factor_data.a2f5();
-    double new_a2f6 = IC1_factor_data.a2f6();
-    double new_a2f7 = IC1_factor_data.a2f7();
-    double new_a2f12 = IC1_factor_data.a2f12();
-    double new_a2f13 = IC1_factor_data.a2f13();
-    double new_AsyBidAsk = IC1_factor_data.AsyBidAsk;
+    float new_a2f5 = IC1_factor_data.a2f5();
+    float new_a2f6 = IC1_factor_data.a2f6();
+    float new_a2f7 = IC1_factor_data.a2f7();
+    float new_a2f12 = IC1_factor_data.a2f12();
+    float new_a2f13 = IC1_factor_data.a2f13();
+    float new_sa2 = IC1_factor_data.sa2();
+    float new_sa3 = IC1_factor_data.sa3();
+    std::array<float, 35> features{new_Ff7_10, new_Ff7_20,   new_Ff7_40,   new_Ff7_80, new_Ff8_2, new_L2a1,  new_L2a2,
+                                   new_L2f10,  new_L2f10_60, new_L2f10_80, new_L2f6,   new_L2f8,  new_L2f9,  new_L2p1,
+                                   new_L2p2,   new_VOI,      new_a1f10,    new_a1f11,  new_a1f12, new_a1f13, new_a1f14,
+                                   new_a1f15,  new_a1f4,     new_a1f6,     new_a1f7,   new_a1f9,  new_a2f12, new_a2f13,
+                                   new_a2f5,   new_a2f6,     new_a2f7,     0,          0,         new_sa2,   new_sa3};
+    double m_signal = ApplyCatboostModel(features);
     auto tag_end = NOW();
+    LOG_INFO5("[signal] {}", m_signal);
+
+    double new_AsyBidAsk = IC1_factor_data.AsyBidAsk;
     double new_MPB = IC1_factor_data.MPB;
     // LOG_INFO5("a1f10 = {:.5f}", new_a1f10);
     // double rank1 = rank1_caler.eval(&IC1_factor_data);
@@ -399,7 +434,7 @@ void Strapro::calc(uint) {
     // if (hft::Compare(rank1, rank2) != 0) {
     //    LOG_INFO5("[rank_ERROR] rank1:{:.2f} rank2:{:.2f}", rank1, rank2);
     //}
-    double old_Ff7_10 = trigger_data->Ff7_10;
+    // double old_Ff7_10 = trigger_data->Ff7_10;
     double old_Ff8_2 = trigger_data->Ff8_2;
     double old_L2a1 = trigger_data->L2a1;
     double old_L2a2 = trigger_data->L2a2;
@@ -430,6 +465,14 @@ void Strapro::calc(uint) {
     double old_a2f7 = trigger_data->a2f7;
     double old_a2f12 = trigger_data->a2f12;
     double old_a2f13 = trigger_data->a2f13;
+    auto old_sa2 = trigger_data->sa2;
+    auto old_sa3 = trigger_data->sa3;
+    if (hft::Compare(new_sa2, old_sa2) != 0) {
+        LOG_INFO5("[sa2_ERROR] old:{:.2f} new:{:.2f}", old_sa2, new_sa2);
+    }
+    if (hft::Compare(new_sa3, old_sa3) != 0) {
+        LOG_INFO5("[sa2_ERROR] old:{:.2f} new:{:.2f}", old_sa3, new_sa3);
+    }
     if (hft::Compare(old_MPB, new_MPB) != 0) {
         LOG_INFO5("[MPB_ERROR] old:{:.2f} new:{:.2f}", old_MPB, new_MPB);
     }
@@ -514,34 +557,26 @@ void Strapro::calc(uint) {
     if (hft::Compare(old_L2f8, new_L2f8) != 0) {
         LOG_INFO5("[L2f8_ERROR] old:{:.2f} new:{:.2f}", old_L2f8, new_L2f8);
     }
-    if (hft::Compare(old_L2f10_60, tmp_L2f10_60) != 0) {
-        LOG_INFO5("[L2f10_60] old:{:.5f} new:{:.5f}", old_L2f10_60, tmp_L2f10_60);
+    if (hft::Compare(old_L2f10_60, new_L2f10_60) != 0) {
+        LOG_INFO5("[L2f10_60] old:{:.5f} new:{:.5f}", old_L2f10_60, new_L2f10_60);
     }
 
-    if (hft::Compare(old_L2a2, tmp_L2a2) != 0) {
-        LOG_INFO5("[L2a2_ERROR] old:{:.5f} new:{:.5f}", old_L2a2, tmp_L2a2);
+    if (hft::Compare(old_L2a2, new_L2a2) != 0) {
+        LOG_INFO5("[L2a2_ERROR] old:{:.5f} new:{:.5f}", old_L2a2, new_L2a2);
     }
 
-    if (hft::Compare(old_Ff8_2, tmp_Ff8_2) != 0) {
-        LOG_INFO5("[Ff8_2_ERROR] old:{:.5f} new:{:.5f}", old_Ff8_2, tmp_Ff8_2);
+    if (hft::Compare(old_Ff8_2, new_Ff8_2) != 0) {
+        LOG_INFO5("[Ff8_2_ERROR] old:{:.5f} new:{:.5f}", old_Ff8_2, new_Ff8_2);
     }
 
     auto dur = DURATION_ns(tag_start, tag_end);
     dur_list.push_back(dur);
-    if (dur_list.size() > 20000) {
+    if (dur_list.size() > 1000000) {
         double mean{0}, std{0};
         mean = math_tool::get_mean(dur_list.begin(), dur_list.end());
         std = math_tool::get_std(dur_list.begin(), dur_list.end());
-        printf("mean %.2f +/- %.2f\n", mean - 16, std);
+        printf("[BENCK_MARK] mean %.2f +/- %.2f\n", mean - 16, std);
         exit(0);
-    }
-    if (hft::Compare(tmp_Ff7, old_Ff7_10) != 0) {
-        LOG_INFO5("[Ff7_10_ERROR] FactorMan:{:.5f} FastFactorMan:{:.5f}", old_Ff7_10, tmp_Ff7);
-    }
-
-    LOG_INFO3("[Ff7_10] FactorMan:{:.5f} FastFactorMan:{:.5f}", old_Ff7_10, tmp_Ff7);
-    if (hft::Compare(old_Ff7_10, tmp_Ff7) != 0) {
-        LOG_INFO5("old_Ff7_10!= tmp_Ff7");
     }
 
     double old_PIM =
@@ -559,8 +594,8 @@ void Strapro::calc(uint) {
     if (hft::Compare(mt_old, mt_new) != 0) {
         LOG_INFO5("[PIM_ERROR] old:{:.5f} new:{:.5f}", mt_old, mt_new);
     }
-    if (hft::Compare(old_L2a1, tmp_L2a1) != 0) {
-        LOG_INFO5("[L2a1_ERROR] old:{:.5f} new:{:.5f}", old_L2a1, tmp_L2a1);
+    if (hft::Compare(old_L2a1, new_L2a1) != 0) {
+        LOG_INFO5("[L2a1_ERROR] old:{:.5f} new:{:.5f}", old_L2a1, new_L2a1);
     }
     auto old_bid_amount = trigger_data->bid_amount;
     auto new_bid_amount = IC1_factor_data.bid_amount;
@@ -586,11 +621,20 @@ void Strapro::calc(uint) {
 }
 void Strapro::doExPose() {
     IC1_factor_data.ExPose(IC1(0));
-    Ff7_caler.ExPose(&IC1_factor_data);
+    // Ff7_caler.ExPose(&IC1_factor_data);
+    Ff7_10_caler.ExPose(&IC1_factor_data);
+    Ff7_20_caler.ExPose(&IC1_factor_data);
+    Ff7_40_caler.ExPose(&IC1_factor_data);
+    Ff7_80_caler.ExPose(&IC1_factor_data);
     Ff8_2_caler.ExPose(&IC1_factor_data);
     L2a1_caler.ExPose(&IC1_factor_data);
     L2a2_caler.ExPose(&IC1_factor_data);
+    L2f10_10_caler.ExPose(&IC1_factor_data);
+    L2f10_10_caler.ExPose(&IC1_factor_data);
+    L2f10_20_caler.ExPose(&IC1_factor_data);
+    L2f10_40_caler.ExPose(&IC1_factor_data);
     L2f10_60_caler.ExPose(&IC1_factor_data);
+    L2f10_80_caler.ExPose(&IC1_factor_data);
     L2f9_caler.ExPose(&IC1_factor_data);
     L2p1_caler.ExPose(&IC1_factor_data);
     L2p2_caler.ExPose(&IC1_factor_data);

@@ -68,10 +68,18 @@ class Strapro : public alpha {
     // hft::FactorMan factor_man;
     hft::fast::FastFactorMan IC1_factor_data;
     hft::fast::Ff7 Ff7_caler;
+    hft::fast::Ff7 Ff7_10_caler;
+    hft::fast::Ff7 Ff7_20_caler;
+    hft::fast::Ff7 Ff7_40_caler;
+    hft::fast::Ff7 Ff7_80_caler;
     hft::fast::Ff8_2 Ff8_2_caler;
     hft::fast::L2a1 L2a1_caler;
     hft::fast::L2a2<4> L2a2_caler;
+    hft::fast::L2f10 L2f10_10_caler;
+    hft::fast::L2f10 L2f10_20_caler;
+    hft::fast::L2f10 L2f10_40_caler;
     hft::fast::L2f10 L2f10_60_caler;
+    hft::fast::L2f10 L2f10_80_caler;
     hft::fast::L2f6 L2f6_caler;
     hft::fast::L2f8 L2f8_caler;
     hft::fast::L2f9 L2f9_caler;
