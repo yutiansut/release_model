@@ -57,6 +57,7 @@ double Ff7_10(const List<T1, Len1> &TP, const List<T2, Len2> &mp, const List<T1,
         for (int i = 1; i < static_cast<int>(mt.end() - mt.begin()); i++) {
             mt[i] = (mt[i] - 0.5 * (mp[i - 1] + mp[i])) / sp[i];
         }
+        LOG_INFO3("[Ff7_10] PIM:{:.5f}", mt.pre(0));
         return ff::ts_trend2(mt, 10);
     }
 }
@@ -124,9 +125,12 @@ double Ff8_1(const List<T1, Len1> &TP, const List<T2, Len2> &mp, const List<T1, 
 template <typename T1, uint32_t Len1, typename T2, uint32_t Len2>
 double Ff8_2(const List<T1, Len1> &TP, const List<T2, Len2> &mp, const List<T1, Len1> &sp) {
     auto mt = TP.copy();
-    for (int i = 1; i < static_cast<int>(mt.end() - mt.begin()); i++) {
+    int max_size = static_cast<int>(mt.end() - mt.begin());
+    for (int i = MAX(max_size - 42, 0); i < max_size; i++) {
         mt[i] = mt[i] - 0.5 * (mp[i - 1] + mp[i]);
     }
+    // LOG_INFO3("[Ff8_2] mt:{:.5f}, max_mt:{:.5f}, max_size:{}", mt.pre(0), ff::ts_max(mt, 40),
+    //          static_cast<int>(mt.end() - mt.begin()));
     return ff::ts_max(mt, 40) * mt.pre(0);
 }
 
@@ -179,11 +183,14 @@ template <typename T, uint32_t Len>
 float L2f9(const List<T, Len> &ask5, const List<T, Len> &bid5) {
     auto tk_bid = ff::ts_rank(ff::ts_delta(bid5, 2), 40);
     auto tk_ask = ff::ts_rank(ff::ts_delta(ask5, 2), 40);
+    // LOG_INFO5("[L2f9] rank_ask:{:.2f} rank_bid:{:.2f}", tk_ask, tk_bid);
     return (tk_bid + tk_ask - 40) / 40;
 }
 
 template <typename T, uint32_t Len>
 double L2f10(const List<T, Len> &ask_amount, const List<T, Len> &bid_amount, const uint16_t &period) {
+    // LOG_INFO3("old[ask_amount_trend] period:{} {:.5f}", period, ff::ts_trend(ask_amount, period));
+    // LOG_INFO3("old[bid_amount_trend] period:{} {:.5f}", period, ff::ts_trend(bid_amount, period));
     return ff::ts_trend(ask_amount, period) - ff::ts_trend(bid_amount, period);
 }
 
@@ -251,7 +258,7 @@ float L2p2(const List<T, Len> &ask5, const List<T, Len> &bid5, const List<T, Len
 
 template <typename T, uint32_t Len>
 float get_a1(const List<T, Len> &x, const uint16_t &period) {
-    return x.pre(0) - x.pre(period);
+    return -x.pre(period) + x.pre(0);
 }
 
 template <typename T, uint32_t Len>
