@@ -32,6 +32,17 @@ template <typename T>
 int8_t sign(const T& val) {
     return (T(0) < val) - (val < T(0));
 }
+
+template <typename T1, typename T2>
+typename std::common_type<T1, T2>::type max(const T1& a, const T2& b) {
+    return a > b ? a : b;
+}
+
+template <typename T1, typename T2>
+typename std::common_type<T1, T2>::type min(const T1& a, const T2& b) {
+    return a < b ? a : b;
+}
+
 template <typename T>
 double entropy(const T* _begin, const T* _end) {
     std::unordered_map<T, int> umap;
